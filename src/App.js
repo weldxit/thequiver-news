@@ -72,29 +72,38 @@ function App() {
     setCategory(selectedCategories);
   };
   const handleSubmit = async () => {
-    // console.log(title, content, category, imgUrl);
-    if(imgUrl!==null){
-      const date = getCurrentDateTimeInIndianTimezone()
-      await axios.get('https://server-for-quiver.onrender.com/create_post', {title, content, category, date, imgUrl}).then(
-       (response)=>{
-         if (response.status === 200){
-           notify("Published Successfully")
-           setTitle("")
-           setContent("")
-           setCategory([])
-           setImgUrl(null)
-         }
-         else{
-           notify("Couldn't Publish..! Try Again")
-         }
-       }
-      )
+    console.log(title, content, category, imgUrl);
+    
+    try {
+      if (imgUrl !== null) {
+        const date = getCurrentDateTimeInIndianTimezone();
+        const response = await axios.post('https://server-for-quiver.onrender.com/create_post', {
+          title,
+          content,
+          category,
+          date,
+          imgUrl
+        });
+  
+        if (response.status === 200) {
+          notify("Published Successfully");
+          setTitle("");
+          setContent("");
+          setCategory([]);
+          setImgUrl(null);
+        } else {
+          notify("Couldn't Publish..! Try Again");
+        }
+      } else {
+        notify("The image couldn't be posted !");
+      }
+    } catch (error) {
+      // Handle errors here
+      console.error('Error occurred:', error);
+      notify("An error occurred. Please try again later.");
     }
-    else{
-      notify("The image couldn't be posted !")
-    }
-   
   };
+  
 
   const schedulePost = () => {};
   const notify = (text) => toast(text);
