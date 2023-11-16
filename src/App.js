@@ -141,6 +141,7 @@ function App() {
                 <MenuItem value= {7}>State</MenuItem>
                 <MenuItem value= {8}>National</MenuItem>
                 <MenuItem value= {9}>International</MenuItem>
+                <MenuItem value= {10}>Shree Jagannath</MenuItem>
                 {/* <MenuItem value="travel">Travel</MenuItem> */}
                 {/* Add more categories as needed */}
               </Select>
