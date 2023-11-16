@@ -1,0 +1,66 @@
+    e.preventDefault()
+    const file = e.target[0]?.files[0]
+    if (!file) return;
+    const storageRef = ref(storage, `thumbnails/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on("state_changed",
+      (snapshot) => {
+        const progress =
+          Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        setProgresspercent(progress);
+      },
+      (error) => {
+        alert(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setImgUrl(downloadURL)
+        });
+      }
+    );
+
+
+
+    import { storage } from './firebase';
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+
+function App() {
+  const [imgUrl, setImgUrl] = useState(null);
+  const [progresspercent, setProgresspercent] = useState(0);
+
+  const handleSubmit = (e) => {
+
+  }
+
+  return (
+    <div className="App">
+
+      {/* <form onSubmit={handleSubmit} className='form'>
+        <input type='file' />
+        <button type='submit'>Upload</button>
+      </form> */}
+      {/* {
+        !imgUrl &&
+        <div className='outerbar'>
+          <div className='innerbar' style={{ width: `${progresspercent}%` }}>{progresspercent}%</div>
+        </div>
+      }
+      {
+        imgUrl &&
+        <img src={imgUrl} alt='uploaded file' height={200} />
+      } */}
+      <BlogForm />
+    </div>
+
+
+
+    {id:1,name:"Politics"},
+        {id:2,name:"Business"},
+        {id:3,name:"Education"},
+        {id:4,name:"Farming"},
+        {id:5,name:"Health & lifestyle"},
+        {id:6,name:"Sports"},
+        {id:7,name:"State"},
+        {id:8,name:"National"},
+        {id:9,name:"International"},
