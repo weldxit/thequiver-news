@@ -92,7 +92,7 @@ function App() {
         //   category,
         //   date,
         //   imgUrl)
-        const response = await axios.post("server-for-quiver.onrender.com/append_post", {
+        const response = await axios.post("https://server-for-quiver.onrender.com/append_post", {
           title,
           content,
           category,
@@ -133,7 +133,7 @@ function App() {
         //   date,
         //   imgUrl
         // )
-        await axios.post("server-for-quiver.onrender.com/schedule_post", {
+        await axios.post("https://server-for-quiver.onrender.com/schedule_post", {
           title,
           content,
           category,
