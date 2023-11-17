@@ -92,7 +92,7 @@ function App() {
         //   category,
         //   date,
         //   imgUrl)
-        const response = await axios.post("http://localhost:3001/append_post", {
+        const response = await axios.post("server-for-quiver.onrender.com/append_post", {
           title,
           content,
           category,
@@ -133,7 +133,7 @@ function App() {
         //   date,
         //   imgUrl
         // )
-        await axios.post("http://localhost:3001/schedule_post", {
+        await axios.post("server-for-quiver.onrender.com/schedule_post", {
           title,
           content,
           category,
@@ -227,7 +227,7 @@ function App() {
             <FormLabel>Upload Thumbnail</FormLabel>
             <div className="app">
               <div className="parent">
-                <div className="file-upload">
+               {!imgUrl ? <div className="file-upload">
                   <img
                     src={
                       "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.pngall.com%2Fwp-content%2Fuploads%2F2%2FUpload-PNG.png&f=1&nofb=1&ipt=b4498f166d3660329fc0c88795c0131e191452079391257b9a552558f27a91bc&ipo=images"
@@ -238,7 +238,7 @@ function App() {
                   <h3>Click box to upload</h3>
                   <p>Maximun file size 10mb</p>
                   <input type="file" onChange={(e) => handleImgSubmit(e)} />
-                </div>
+                </div> : <img src={imgUrl} alt="uploaded file" height={200} />}
               </div>
               {!imgUrl && (
         <div className="outerbar">
