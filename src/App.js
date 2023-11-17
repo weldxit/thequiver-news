@@ -18,8 +18,14 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import moment from "moment-timezone";
+// import dayjs from 'dayjs';
+// import utc from 'dayjs/plugin/utc';
+// import timezone from 'dayjs/plugin/timezone';
+// dayjs.extend(utc);
+// dayjs.extend(timezone);
 function App() {
   const [imgUrl, setImgUrl] = useState(null);
   const [progresspercent, setProgresspercent] = useState(0);
@@ -29,6 +35,7 @@ function App() {
   const [scheduledDateTime, setScheduledDateTime] = useState(null);
   const [timer, setTimer] = useState("");
   const [showpickup, setShowpickup] = useState(false);
+  const [open, setOpen] = useState(false);
 
   // const [image, setImage] = useState(null);
 
@@ -60,31 +67,39 @@ function App() {
       }
     );
   };
-  function getCurrentDateTimeInIndianTimezone() {
-    const indianTimezone = 'Asia/Kolkata';
-    const options = { timeZone: indianTimezone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-    const currentDateTime = new Date().toLocaleString('en-IN', options);
-    return currentDateTime;
-  }
+
+  // function getCurrentDateTimeInIndianTimezone() {
+  //   const indianTimezone = 'Asia/Kolkata';
+  //   const options = { timeZone: indianTimezone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+  //   const currentDateTime = new Date().toLocaleString('en-IN', options);
+  //   return currentDateTime;
+  // }
   const handleCategoryChange = (event) => {
     const { value: selectedCategories } = event.target;
-    console.log(selectedCategories)
+    // console.log(selectedCategories)
     setCategory(selectedCategories);
+    setOpen(false);
   };
   const handleSubmit = async () => {
-    console.log(title, content, category, imgUrl);
-    
+    // console.log(title, content, category, imgUrl);
+
     try {
       if (imgUrl !== null) {
-        const date = getCurrentDateTimeInIndianTimezone();
-        const response = await axios.post('https://server-for-quiver.onrender.com/create_post', {
+        const date = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ssZ");
+        // console.log(
+        // title,
+        //   content,
+        //   category,
+        //   date,
+        //   imgUrl)
+        const response = await axios.post("http://localhost:3001/append_post", {
           title,
           content,
           category,
           date,
-          imgUrl
+          imgUrl,
         });
-  
+
         if (response.status === 200) {
           notify("Published Successfully");
           setTitle("");
@@ -99,17 +114,56 @@ function App() {
       }
     } catch (error) {
       // Handle errors here
-      console.error('Error occurred:', error);
+      console.error("Error occurred:", error);
       notify("An error occurred. Please try again later.");
     }
   };
-  
 
-  const schedulePost = () => {};
+  const schedulePost = async () => {
+    
+    // console.log(formattedTime)
+    try {
+      if (imgUrl !== null) {
+        const date = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ssZ");
+        const scheduleTime = moment(timer.$d).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ssZ');
+        // console.log(
+        //   title,
+        //   content,
+        //   category,
+        //   date,
+        //   imgUrl
+        // )
+        await axios.post("http://localhost:3001/schedule_post", {
+          title,
+          content,
+          category,
+          date,
+          imgUrl,
+          scheduleTime
+        }).then(
+          (response) =>{
+
+            notify("Scheduled Successfully");
+            setTitle("");
+              setContent("");
+              setCategory([]);
+              setImgUrl(null);
+          }
+        );
+      } else {
+        notify("The image couldn't be posted !");
+      }
+    } catch (error) {
+      // Handle errors here
+      console.error("Error occurred:", error);
+      notify("An error occurred. Please try again later.");
+    }
+  };
   const notify = (text) => toast(text);
   return (
     <div className="App">
-      <form onSubmit={handleSubmit} className="form">
+      <h1 className="heading">THE Quiver News</h1>
+      <div className="form">
         <div className="inputs">
           <FormGroup sx={{ marginBottom: 2 }}>
             <TextField
@@ -135,22 +189,28 @@ function App() {
             <FormControl fullWidth variant="outlined">
               <InputLabel>Category</InputLabel>
               <Select
-              multiple
+                multiple
                 value={category}
                 onChange={handleCategoryChange}
                 label="Category"
+                open={open}
+                onOpen={() => setOpen(true)}
+                onClose={() => setOpen(false)}
+                MenuProps={{
+                  onClose: () => setOpen(false), 
+                }}
               >
                 <MenuItem value="">Select category</MenuItem>
-                <MenuItem value= {1}>Politics</MenuItem>
-                <MenuItem value= {2}>Business</MenuItem>
-                <MenuItem value= {3}>Education</MenuItem>
-                <MenuItem value= {4}>Farming</MenuItem>
-                <MenuItem value= {5}>Health & lifestyle</MenuItem>
-                <MenuItem value= {6}>Sports</MenuItem>
-                <MenuItem value= {7}>State</MenuItem>
-                <MenuItem value= {8}>National</MenuItem>
-                <MenuItem value= {9}>International</MenuItem>
-                <MenuItem value= {10}>Shree Jagannath</MenuItem>
+                <MenuItem value={1}>Politics</MenuItem>
+                <MenuItem value={2}>Business</MenuItem>
+                <MenuItem value={3}>Education</MenuItem>
+                <MenuItem value={4}>Farming</MenuItem>
+                <MenuItem value={5}>Health & lifestyle</MenuItem>
+                <MenuItem value={6}>Sports</MenuItem>
+                <MenuItem value={7}>State</MenuItem>
+                <MenuItem value={8}>National</MenuItem>
+                <MenuItem value={9}>International</MenuItem>
+                <MenuItem value={10}>Shree Jagannath</MenuItem>
                 {/* <MenuItem value="travel">Travel</MenuItem> */}
                 {/* Add more categories as needed */}
               </Select>
@@ -180,6 +240,16 @@ function App() {
                   <input type="file" onChange={(e) => handleImgSubmit(e)} />
                 </div>
               </div>
+              {!imgUrl && (
+        <div className="outerbar">
+          <div
+            className="innerbar"
+            style={{ width: `${progresspercent}%`, backgroundColor: "green", height:'2px' }}
+          >
+            {progresspercent <= 0 ? '' : `${progresspercent}%`}
+          </div>
+        </div>
+      )}
             </div>
           </FormGroup>
         </div>
@@ -189,6 +259,7 @@ function App() {
             color="primary"
             type="submit"
             sx={{ marginBottom: 2, height: 30 }}
+            onClick={handleSubmit}
           >
             Submit
           </Button>
@@ -199,40 +270,34 @@ function App() {
                 label="Select time to publish"
                 value={timer}
                 onChange={(time) => {
+                  
+                  console.log(time);
                   setTimer(time);
                   setShowpickup(showpickup);
+                  // console.log(timer)
                 }}
               />
             </DemoContainer>
           </LocalizationProvider>
           {/* {showpickup ? ( */}
-            <Button
-              variant="contained"
-              color="primary"
-              // type="submit"
-              sx={{ marginBottom: 2, height: 30, marginTop:3 }}
-              disabled={!timer}
-              onClick={schedulePost}
-            >
-              Schedule
-            </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            // type="submit"
+            sx={{ marginBottom: 2, height: 30, marginTop: 3 }}
+            disabled={!timer}
+            onClick={schedulePost}
+          >
+            Schedule
+          </Button>
           {/* ) : (
             ""
           )} */}
         </div>
-      </form>
+      </div>
       <ToastContainer />
-      {!imgUrl && (
-        <div className="outerbar">
-          <div
-            className="innerbar"
-            style={{ width: `${progresspercent}%`, backgroundColor: "red" }}
-          >
-            {progresspercent}%
-          </div>
-        </div>
-      )}
-      {imgUrl && <img src={imgUrl} alt="uploaded file" height={200} />}
+      
+      {/* {imgUrl && <img src={imgUrl} alt="uploaded file" height={200} />} */}
     </div>
   );
 }
