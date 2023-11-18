@@ -10,7 +10,7 @@ const firebaseConfig = {
     projectId: "the-quiver-aebd9",
     storageBucket: "the-quiver-aebd9.appspot.com",
     messagingSenderId: "776795297518",
-    appId: "1:776795297518:android:8c4d3843380fbffb8985ff"
+    appId: "1:776795297518:android:ca80d3dfda4fb9258985ff"
     
 };
 // Initialize Firebase
