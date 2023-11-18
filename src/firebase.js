@@ -5,12 +5,12 @@ import { getStorage } from "firebase/storage";
 // https://firebase.google.com/docs/web/setup#available-libraries
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyARVGSRpMWtMKVzfLQGMmS9HPWggj-699Y",
-    authDomain: "the-quiver-aebd9.firebaseapp.com",
-    projectId: "the-quiver-aebd9",
-    storageBucket: "the-quiver-aebd9.appspot.com",
-    messagingSenderId: "776795297518",
-    appId: "1:776795297518:android:ca80d3dfda4fb9258985ff"
+    apiKey: "AIzaSyBWU3mKtLbiLSGgewOWsbvqiuinpr5f8sk",
+    authDomain: "quiver-b4b65.firebaseapp.com",
+    projectId: "quiver-b4b65",
+    storageBucket: "quiver-b4b65.appspot.com",
+    messagingSenderId: "216007132332",
+    appId: "1:216007132332:android:9b533adb45badd9b03cb09"
     
 };
 // Initialize Firebase
