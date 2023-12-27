@@ -133,6 +133,7 @@ function App() {
         //   date,
         //   imgUrl
         // )
+        notify("Scheduled on server...")
         await axios.post("https://server-for-quiver.onrender.com/schedule_post", {
           title,
           content,
@@ -141,7 +142,7 @@ function App() {
           imgUrl,
           scheduleTime
         }).then(
-          (response) =>{
+          async (response) =>{
 
             notify("Scheduled Successfully");
             setTitle("");
