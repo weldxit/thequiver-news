@@ -43,11 +43,19 @@ function App() {
     e.preventDefault();
     const file = e.target.files[0];
     if (!file) {
-      console.log("no file choosen");
+      console.log("no file chosen");
+      return;
     }
-    const storageRef = ref(storage, `files/${file.name}`);
+  
+    // Generate a timestamp or a unique identifier
+    const timestamp = Date.now(); // Using a timestamp as an example
+  
+    // Append the timestamp to the file name
+    const fileNameWithTimestamp = `${timestamp}_${file.name}`;
+  
+    const storageRef = ref(storage, `files/${fileNameWithTimestamp}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
-
+  
     uploadTask.on(
       "state_changed",
       (snapshot) => {
@@ -67,6 +75,7 @@ function App() {
       }
     );
   };
+  
 
   // function getCurrentDateTimeInIndianTimezone() {
   //   const indianTimezone = 'Asia/Kolkata';
