@@ -2,6 +2,8 @@ import "./App.css";
 import { useState } from "react";
 import { storage } from "./firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import imageCompression from 'browser-image-compression';
+import Compressor from 'compressorjs';
 import {
   TextField,
   Button,
@@ -21,11 +23,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import moment from "moment-timezone";
-// import dayjs from 'dayjs';
-// import utc from 'dayjs/plugin/utc';
-// import timezone from 'dayjs/plugin/timezone';
-// dayjs.extend(utc);
-// dayjs.extend(timezone);
+
 function App() {
   const [imgUrl, setImgUrl] = useState(null);
   const [progresspercent, setProgresspercent] = useState(0);
@@ -42,71 +40,86 @@ function App() {
   const handleImgSubmit = (e) => {
     e.preventDefault();
     const file = e.target.files[0];
+  
     if (!file) {
-      console.log("no file chosen");
+      console.log("No file chosen");
       return;
     }
   
-    // Generate a timestamp or a unique identifier
-    const timestamp = Date.now(); // Using a timestamp as an example
+    try {
+      // Additional options for image compression
+      const options = {
+        quality: 0.6,  // Adjust the quality (0 to 1)
+        maxWidth: 800, // Maximum width of the compressed image
+        maxHeight: 800, // Maximum height of the compressed image
+      };
   
-    // Append the timestamp to the file name
-    const fileNameWithTimestamp = `${timestamp}_${file.name}`;
+      // Compress the image before uploading
+      new Compressor(file, {
+        ...options,
+        success: (compressedFile) => {
+          // Generate a timestamp or a unique identifier
+          const timestamp = Date.now(); // Using a timestamp as an example
   
-    const storageRef = ref(storage, `files/${fileNameWithTimestamp}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
+          // Append the timestamp to the file name
+          const fileNameWithTimestamp = `${timestamp}_${file.name}`;
   
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
-        setProgresspercent(progress);
-      },
-      (error) => {
-        alert(error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setImgUrl(downloadURL);
-          // console.log(title, content, category, downloadURL)
-        });
-      }
-    );
+          // Create a reference to the storage location with the new filename
+          const storageRef = ref(storage, `files/${fileNameWithTimestamp}`);
+  
+          // Upload the compressed file to Firebase Storage
+          const uploadTask = uploadBytesResumable(storageRef, compressedFile);
+  
+          // Listen to the upload state changes
+          uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+              // Calculate and update the upload progress
+              const progress = Math.round(
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+              );
+              setProgresspercent(progress);
+            },
+            (error) => {
+              // Handle errors during the upload
+              alert(error);
+            },
+            () => {
+              // Once the upload is complete, get the download URL
+              getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                // Set the download URL in the component state
+                setImgUrl(downloadURL);
+              });
+            }
+          );
+        },
+        error: (err) => {
+          console.error("Error compressing image:", err.message);
+        },
+      });
+    } catch (error) {
+      console.error("Error compressing image:", error);
+    }
   };
   
-
-  // function getCurrentDateTimeInIndianTimezone() {
-  //   const indianTimezone = 'Asia/Kolkata';
-  //   const options = { timeZone: indianTimezone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-  //   const currentDateTime = new Date().toLocaleString('en-IN', options);
-  //   return currentDateTime;
-  // }
   const handleCategoryChange = (event) => {
     const { value: selectedCategories } = event.target;
-    // console.log(selectedCategories)
     setCategory(selectedCategories);
     setOpen(false);
   };
-  const handleSubmit = async () => {
-    // console.log(title, content, category, imgUrl);
 
+
+  const handleSubmit = async () => {
     try {
       if (imgUrl !== null) {
         const date = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ssZ");
-        // console.log(
-        // title,
-        //   content,
-        //   category,
-        //   date,
-        //   imgUrl)
         const response = await axios.post("https://server-for-quiver.onrender.com/append_post", {
           title,
           content,
           category,
           date,
           imgUrl,
+          author:"The Quiver"
         });
 
         if (response.status === 200) {
@@ -129,27 +142,19 @@ function App() {
   };
 
   const schedulePost = async () => {
-    
-    // console.log(formattedTime)
     try {
       if (imgUrl !== null) {
         const date = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ssZ");
         const scheduleTime = moment(timer.$d).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ssZ');
-        // console.log(
-        //   title,
-        //   content,
-        //   category,
-        //   date,
-        //   imgUrl
-        // )
         notify("Scheduled on server...")
-        await axios.post("https://server-for-quiver.onrender.com/schedule_post", {
+        await axios.post("http://localhost:3000/api/schedule_post", {
           title,
           content,
           category,
           date,
           imgUrl,
-          scheduleTime
+          scheduleTime,
+          author:"The Quiver"
         }).then(
           async (response) =>{
 
