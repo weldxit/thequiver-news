@@ -113,7 +113,7 @@ function App() {
     try {
       if (imgUrl !== null) {
         const date = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ssZ");
-        const response = await axios.post("https://server-for-quiver.onrender.com/append_post", {
+        const response = await axios.post("http://localhost:3001/append_post", {
           title,
           content,
           category,
@@ -147,7 +147,7 @@ function App() {
         const date = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ssZ");
         const scheduleTime = moment(timer.$d).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ssZ');
         notify("Scheduled on server...")
-        await axios.post("http://localhost:3000/api/schedule_post", {
+        await axios.post("http://localhost:3001/schedule_post", {
           title,
           content,
           category,
