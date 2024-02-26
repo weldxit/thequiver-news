@@ -123,7 +123,7 @@ function App() {
   const handleSubmit = async () => {
     
     try {
-      if (imgUrl !== null && category.length <= 0 && title !== "" && content!=="") {
+      if (imgUrl !== null && category.length != [] && title !== "" && content!=="") {
         const date = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ssZ");
         const response = await axios.post(
           "https://server-for-quiver.onrender.com/append_post",
