@@ -113,7 +113,7 @@ function App() {
     try {
       if (imgUrl !== null) {
         const date = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ssZ");
-        const response = await axios.post("http://localhost:3001/append_post", {
+        const response = await axios.post("https://server-for-quiver.onrender.com/append_post", {
           title,
           content,
           category,
@@ -147,7 +147,7 @@ function App() {
         const date = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ssZ");
         const scheduleTime = moment(timer.$d).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ssZ');
         notify("Scheduled on server...")
-        await axios.post("http://localhost:3001/schedule_post", {
+        await axios.post("https://server-for-quiver.onrender.com/schedule_post", {
           title,
           content,
           category,
@@ -177,7 +177,10 @@ function App() {
   const notify = (text) => toast(text);
   return (
     <div className="App">
-      <h1 className="heading">THE Quiver News</h1>
+      <div style={{display:'flex',flexDirection:'column', justifyContent:'start', paddingLeft:'5.5rem', paddingBottom:'1rem', paddingTop:'1rem'}}>
+     <img src={require('./ezgif.com-crop.gif')} alt="brand logo" height={40} width={100} style={{justifySelf:'flex-start'}}/>
+
+     </div>
       <div className="form">
         <div className="inputs">
           <FormGroup sx={{ marginBottom: 2 }}>
@@ -236,13 +239,13 @@ function App() {
               marginBottom: 2,
               marginTop: 3,
               justifyContent: "center",
-              alignItems: "center",
+              alignItems: "start",
             }}
           >
-            <FormLabel>Upload Thumbnail</FormLabel>
+            {/* <FormLabel>Upload Thumbnail</FormLabel> */}
             <div className="app">
               <div className="parent">
-               {!imgUrl ? <div className="file-upload">
+                <div className="file-upload">
                   <img
                     src={
                       "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.pngall.com%2Fwp-content%2Fuploads%2F2%2FUpload-PNG.png&f=1&nofb=1&ipt=b4498f166d3660329fc0c88795c0131e191452079391257b9a552558f27a91bc&ipo=images"
@@ -251,9 +254,12 @@ function App() {
                     className="img"
                   />
                   <h3>Click box to upload</h3>
-                  <p>Maximun file size 10mb</p>
+                  <p>*max file size 10mb</p>
                   <input type="file" onChange={(e) => handleImgSubmit(e)} />
-                </div> : <img src={imgUrl} alt="uploaded file" height={200} />}
+                </div>  
+                {
+                  !imgUrl ? <div style={{display:'flex', flex:1, justifyContent:'center', alignItems:'center'}}><p style={{fontSize:'20px', fontWeight:'bold', color:'gray'}}>Upload Image to Preview</p></div> : <div style={{display:'flex', flex:1, justifyContent:'center', alignItems:'center'}}><img src={imgUrl} alt="uploaded file" height={200} /></div>
+                }
               </div>
               {!imgUrl && (
         <div className="outerbar">
@@ -266,18 +272,20 @@ function App() {
         </div>
       )}
             </div>
+            
           </FormGroup>
-        </div>
-        <div className="buttons">
           <Button
             variant="contained"
             color="primary"
             type="submit"
-            sx={{ marginBottom: 2, height: 30 }}
+            sx={{ marginBottom: 2, height: 40, width:'100%' }}
             onClick={handleSubmit}
           >
             Submit
           </Button>
+        </div>
+        <div className="buttons">
+         
 
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={["DateTimePicker"]}>

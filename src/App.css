@@ -44,7 +44,7 @@
 }
 
 .app {
-  width: 50%;
+  width: 100%;
   height: 10;
   display: flex;
   flex-direction: column;
@@ -60,11 +60,14 @@
   background: rgb(255, 255, 255);
   border-radius: 25px;
   box-shadow: 7px 20px 20px rgb(210, 227, 244);
+  display: flex;
+  width: 100%;
+  background-color: white;
 }
 
 .file-upload {
   text-align: center;
-  border: 3px dashed rgb(210, 227, 244);
+  /* border: 3px dashed rgb(210, 227, 244); */
   padding: 1.5rem;
   position: relative;
   cursor: pointer;
