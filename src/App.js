@@ -2,8 +2,8 @@ import "./App.css";
 import { useState } from "react";
 import { storage } from "./firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import imageCompression from 'browser-image-compression';
-import Compressor from 'compressorjs';
+import imageCompression from "browser-image-compression";
+import Compressor from "compressorjs";
 import {
   TextField,
   Button,
@@ -40,36 +40,36 @@ function App() {
   const handleImgSubmit = (e) => {
     e.preventDefault();
     const file = e.target.files[0];
-  
+
     if (!file) {
       console.log("No file chosen");
       return;
     }
-  
+
     try {
       // Additional options for image compression
       const options = {
-        quality: 0.6,  // Adjust the quality (0 to 1)
+        quality: 0.6, // Adjust the quality (0 to 1)
         maxWidth: 800, // Maximum width of the compressed image
         maxHeight: 800, // Maximum height of the compressed image
       };
-  
+
       // Compress the image before uploading
       new Compressor(file, {
         ...options,
         success: (compressedFile) => {
           // Generate a timestamp or a unique identifier
           const timestamp = Date.now(); // Using a timestamp as an example
-  
+
           // Append the timestamp to the file name
           const fileNameWithTimestamp = `${timestamp}_${file.name}`;
-  
+
           // Create a reference to the storage location with the new filename
           const storageRef = ref(storage, `files/${fileNameWithTimestamp}`);
-  
+
           // Upload the compressed file to Firebase Storage
           const uploadTask = uploadBytesResumable(storageRef, compressedFile);
-  
+
           // Listen to the upload state changes
           uploadTask.on(
             "state_changed",
@@ -101,26 +101,41 @@ function App() {
       console.error("Error compressing image:", error);
     }
   };
-  
+
   const handleCategoryChange = (event) => {
     const { value: selectedCategories } = event.target;
     setCategory(selectedCategories);
     setOpen(false);
   };
 
-
+  let contentWithBreaks = "";
+  if (content) {
+    const textWithNewLines = content;
+    const splitText = textWithNewLines?.split("\n");
+    contentWithBreaks = splitText?.map((line, index) => (
+      <p key={index} className="mb-5">
+        {" "}
+        {/* Apply margin-bottom style directly to div */}
+        {line}
+      </p>
+    ));
+  }
   const handleSubmit = async () => {
+    
     try {
-      if (imgUrl !== null) {
+      if (imgUrl !== null && category.length <= 0 && title !== "" && content!=="") {
         const date = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ssZ");
-        const response = await axios.post("https://server-for-quiver.onrender.com/append_post", {
-          title,
-          content,
-          category,
-          date,
-          imgUrl,
-          author:"The Quiver"
-        });
+        const response = await axios.post(
+          "https://server-for-quiver.onrender.com/append_post",
+          {
+            title,
+            content,
+            category,
+            date,
+            imgUrl,
+            author: "The Quiver",
+          }
+        );
 
         if (response.status === 200) {
           notify("Published Successfully");
@@ -132,7 +147,7 @@ function App() {
           notify("Couldn't Publish..! Try Again");
         }
       } else {
-        notify("The image couldn't be posted !");
+        notify("Please fill all fields..and Try Again !");
       }
     } catch (error) {
       // Handle errors here
@@ -145,26 +160,28 @@ function App() {
     try {
       if (imgUrl !== null) {
         const date = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ssZ");
-        const scheduleTime = moment(timer.$d).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ssZ');
-        notify("Scheduled on server...")
-        await axios.post("https://server-for-quiver.onrender.com/schedule_post", {
-          title,
-          content,
-          category,
-          date,
-          imgUrl,
-          scheduleTime,
-          author:"The Quiver"
-        }).then(
-          async (response) =>{
-
+        const scheduleTime = moment(timer.$d)
+          .tz("Asia/Kolkata")
+          .format("YYYY-MM-DD HH:mm:ssZ");
+        notify("Scheduled on server...");
+        await axios
+          .post("https://server-for-quiver.onrender.com/schedule_post", {
+            title,
+            content,
+            category,
+            date,
+            imgUrl,
+            scheduleTime,
+            author: "The Quiver",
+          })
+          .then(async (response) => {
             notify("Scheduled Successfully");
             setTitle("");
-              setContent("");
-              setCategory([]);
-              setImgUrl(null);
-          }
-        );
+            setContent("");
+            setCategory([]);
+            setImgUrl(null);
+            setProgresspercent(0)
+          });
       } else {
         notify("The image couldn't be posted !");
       }
@@ -177,10 +194,24 @@ function App() {
   const notify = (text) => toast(text);
   return (
     <div className="App">
-      <div style={{display:'flex',flexDirection:'column', justifyContent:'start', paddingLeft:'5.5rem', paddingBottom:'1rem', paddingTop:'1rem'}}>
-     <img src={require('./ezgif.com-crop.gif')} alt="brand logo" height={40} width={100} style={{justifySelf:'flex-start'}}/>
-
-     </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "start",
+          paddingLeft: "5.5rem",
+          paddingBottom: "1rem",
+          paddingTop: "1rem",
+        }}
+      >
+        <img
+          src={require("./ezgif.com-crop.gif")}
+          alt="brand logo"
+          height={40}
+          width={100}
+          style={{ justifySelf: "flex-start" }}
+        />
+      </div>
       <div className="form">
         <div className="inputs">
           <FormGroup sx={{ marginBottom: 2 }}>
@@ -215,7 +246,7 @@ function App() {
                 onOpen={() => setOpen(true)}
                 onClose={() => setOpen(false)}
                 MenuProps={{
-                  onClose: () => setOpen(false), 
+                  onClose: () => setOpen(false),
                 }}
               >
                 <MenuItem value="">Select category</MenuItem>
@@ -256,70 +287,128 @@ function App() {
                   <h3>Click box to upload</h3>
                   <p>*max file size 10mb</p>
                   <input type="file" onChange={(e) => handleImgSubmit(e)} />
-                </div>  
-                {
-                  !imgUrl ? <div style={{display:'flex', flex:1, justifyContent:'center', alignItems:'center'}}><p style={{fontSize:'20px', fontWeight:'bold', color:'gray'}}>Upload Image to Preview</p></div> : <div style={{display:'flex', flex:1, justifyContent:'center', alignItems:'center'}}><img src={imgUrl} alt="uploaded file" height={200} /></div>
-                }
+                </div>
+                {/* {
+                  !imgUrl ? <div style={{display:'flex', flex:1, justifyContent:'center', alignItems:'center'}}><p style={{fontSize:'20px', fontWeight:'bold', color:'gray'}}>Upload Image to Preview</p></div> :
+                   <div style={{display:'flex', flex:1, justifyContent:'center', alignItems:'center'}}><img src={imgUrl} alt="uploaded file" height={200} /></div>
+                } */}
+                <div style={{display:'flex', flexDirection:'row', flex:1, justifyContent:'space-around', alignItems:'center'}}>
+                  <div>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={["DateTimePicker"]}>
+                      <DateTimePicker
+                        label="Select time to publish"
+                        value={timer}
+                        onChange={(time) => {
+                          console.log(time);
+                          setTimer(time);
+                          setShowpickup(showpickup);
+                          // console.log(timer)
+                        }}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    // type="submit"
+                    sx={{
+                      marginBottom: 2,
+                      height: 30,
+                      marginTop: 3,
+                      width: "100%",
+                    }}
+                    disabled={!timer}
+                    onClick={schedulePost}
+                  >
+                    Schedule
+                  </Button>
+                  </div>
+                  <div>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    type="submit"
+                    sx={{ marginBottom: 2, height: 40, width: "100%" }}
+                    onClick={handleSubmit}
+                  >
+                    Publish Post
+                  </Button>
+                  </div>
+                 
+                
+                </div>
               </div>
               {!imgUrl && (
-        <div className="outerbar">
-          <div
-            className="innerbar"
-            style={{ width: `${progresspercent}%`, backgroundColor: "green", height:'2px' }}
-          >
-            {progresspercent <= 0 ? '' : `${progresspercent}%`}
-          </div>
-        </div>
-      )}
+                <div className="outerbar">
+                  <div
+                    className="innerbar"
+                    style={{
+                      width: `${progresspercent}%`,
+                      backgroundColor: "green",
+                      height: "2px",
+                      width:'100%'
+                    }}
+                  >
+                    {progresspercent <= 0 ? "" : `${progresspercent}%`}
+                  </div>
+                </div>
+              )}
             </div>
-            
           </FormGroup>
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            sx={{ marginBottom: 2, height: 40, width:'100%' }}
-            onClick={handleSubmit}
-          >
-            Submit
-          </Button>
         </div>
         <div className="buttons">
-         
-
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DemoContainer components={["DateTimePicker"]}>
-              <DateTimePicker
-                label="Select time to publish"
-                value={timer}
-                onChange={(time) => {
-                  
-                  console.log(time);
-                  setTimer(time);
-                  setShowpickup(showpickup);
-                  // console.log(timer)
-                }}
-              />
-            </DemoContainer>
-          </LocalizationProvider>
-          {/* {showpickup ? ( */}
-          <Button
-            variant="contained"
-            color="primary"
-            // type="submit"
-            sx={{ marginBottom: 2, height: 30, marginTop: 3 }}
-            disabled={!timer}
-            onClick={schedulePost}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100%",
+              overflow: "hidden",
+            }}
           >
-            Schedule
-          </Button>
-          {/* ) : (
-            ""
-          )} */}
+            {/* <h2 style={{textAlign:'start'}}>Preview Post</h2> */}
+            <div style={{ width: "100%", textAlign: "start" }}>
+              <h3>{title ? title : ""}</h3>
+            </div>
+            {imgUrl ? (
+              <div
+                style={{
+                  display: "flex",
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  paddingTop: "10px",
+                }}
+              >
+                <img
+                  src={imgUrl}
+                  alt="uploaded file"
+                  height={300}
+                  width={520}
+                />
+              </div>
+            ) : (
+              ""
+            )}
+
+            <p
+              style={{
+                textAlign: "start",
+                backgroundColor: "white",
+                overflow: "hidden",
+                height: "40vh",
+                paddingTop: "10px",
+              }}
+            >
+              {contentWithBreaks ? contentWithBreaks : ""}
+            </p>
+          </div>
         </div>
       </div>
       <ToastContainer />
-      
+
       {/* {imgUrl && <img src={imgUrl} alt="uploaded file" height={200} />} */}
     </div>
   );
