@@ -107,7 +107,21 @@ function App() {
     setCategory(selectedCategories);
     setOpen(false);
   };
-
+  function convertToEmbedLink(youtubeLink) {
+    // Extract the video ID from the YouTube link
+    const videoIdMatch = youtubeLink.match(/[?&]v=([^&]+)/);
+    
+    if (videoIdMatch) {
+      const videoId = videoIdMatch[1];
+      // Create the embed link
+      const embedLink = `https://www.youtube.com/embed/${videoId}`;
+      return embedLink;
+    } else {
+      // Invalid YouTube link format
+      return null;
+    }
+  }
+  let link = convertToEmbedLink(youtubelink)
   let contentWithBreaks = "";
   if (content) {
     const textWithNewLines = content;
@@ -123,7 +137,7 @@ function App() {
             <iframe
               // width="560"
               // height="315"
-              src={youtubelink}
+              src={link}
               title="YouTube Video"
               allowFullScreen
               className=" w-[100%] h-[30vh] md:h-[50vh] lg:h-[55vh] xl:h-[50vh] xl:w-[80%] rounded-lg"
