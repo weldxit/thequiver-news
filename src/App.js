@@ -1,8 +1,8 @@
 import "./App.css";
-import { useState } from "react";
+import React, { useState } from "react";
 import { storage } from "./firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import imageCompression from "browser-image-compression";
+
 import Compressor from "compressorjs";
 import {
   TextField,
@@ -12,7 +12,6 @@ import {
   FormControl,
   InputLabel,
   FormGroup,
-  FormLabel,
 } from "@mui/material";
 import axios from "axios";
 // import { DateTimePicker } from "@mui/x-date-pickers";
@@ -30,6 +29,7 @@ function App() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState([]);
+  const [youtubelink, setYoutubelink] = useState("");
   const [scheduledDateTime, setScheduledDateTime] = useState(null);
   const [timer, setTimer] = useState("");
   const [showpickup, setShowpickup] = useState(false);
@@ -113,17 +113,34 @@ function App() {
     const textWithNewLines = content;
     const splitText = textWithNewLines?.split("\n");
     contentWithBreaks = splitText?.map((line, index) => (
-      <p key={index} className="mb-5">
-        {" "}
-        {/* Apply margin-bottom style directly to div */}
-        {line}
-      </p>
+      <React.Fragment key={index}>
+        <p className="mb-5">{line}</p>
+        {/* {console.log(article,textWithNewLines,article?.youtube_link)} */}
+        {content && youtubelink && index === 1 && (
+          <div className="flex flex-1 w-full justify-center items-center  mb-5 h-[30vh] md:h-[50vh] lg:h-[55vh] xl:h-[60vh]">
+            {/* Render your YouTube video component here */}
+            {/* Example: Replace 'VIDEO_ID' with your actual YouTube video ID */}
+            <iframe
+              // width="560"
+              // height="315"
+              src={youtubelink}
+              title="YouTube Video"
+              allowFullScreen
+              className=" w-[100%] h-[30vh] md:h-[50vh] lg:h-[55vh] xl:h-[50vh] xl:w-[80%] rounded-lg"
+            ></iframe>
+          </div>
+        )}
+      </React.Fragment>
     ));
   }
   const handleSubmit = async () => {
-    
     try {
-      if (imgUrl !== null && category.length != [] && title !== "" && content!=="") {
+      if (
+        imgUrl !== null &&
+        category.length != [] &&
+        title !== "" &&
+        content !== ""
+      ) {
         const date = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ssZ");
         const response = await axios.post(
           "https://server-for-quiver.onrender.com/append_post",
@@ -133,6 +150,7 @@ function App() {
             category,
             date,
             imgUrl,
+            youtubelink,
             author: "The Quiver",
           }
         );
@@ -143,6 +161,7 @@ function App() {
           setContent("");
           setCategory([]);
           setImgUrl(null);
+          setYoutubelink("");
         } else {
           notify("Couldn't Publish..! Try Again");
         }
@@ -165,22 +184,27 @@ function App() {
           .format("YYYY-MM-DD HH:mm:ssZ");
         notify("Scheduled on server...");
         await axios
-          .post("https://server-for-quiver.onrender.com/schedule_post", {
-            title,
-            content,
-            category,
-            date,
-            imgUrl,
-            scheduleTime,
-            author: "The Quiver",
-          })
+          .post(
+            "https://https://server-for-quiver.onrender.com/schedule_post",
+            {
+              title,
+              content,
+              category,
+              date,
+              imgUrl,
+              youtubelink,
+              scheduleTime,
+              author: "The Quiver",
+            }
+          )
           .then(async (response) => {
             notify("Scheduled Successfully");
             setTitle("");
             setContent("");
             setCategory([]);
             setImgUrl(null);
-            setProgresspercent(0)
+            setProgresspercent(0);
+            setYoutubelink("");
           });
       } else {
         notify("The image couldn't be posted !");
@@ -212,201 +236,188 @@ function App() {
           style={{ justifySelf: "flex-start" }}
         />
       </div>
-      <div className="form">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', maxWidth: '1200px', width: '100%' }}>
+        {/* Form Section */}
+        <div className="form" style={{ flex: '1', padding: '20px', boxSizing: 'border-box' }}>
         <div className="inputs">
-          <FormGroup sx={{ marginBottom: 2 }}>
-            <TextField
-              label="Title"
-              variant="outlined"
-              fullWidth
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+    <FormGroup sx={{ marginBottom: 2 }}>
+      <TextField
+        label="Title"
+        variant="outlined"
+        fullWidth
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
+    </FormGroup>
+    <FormGroup sx={{ marginBottom: 2 }}>
+      <TextField
+        label="Content"
+        variant="outlined"
+        fullWidth
+        multiline
+        rows={13}
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+      />
+    </FormGroup>
+    <FormGroup sx={{ marginBottom: 2 }}>
+      <TextField
+        label="Youtube Link"
+        variant="outlined"
+        fullWidth
+        value={youtubelink}
+        onChange={(e) => setYoutubelink(e.target.value)}
+      />
+    </FormGroup>
+    <FormGroup sx={{ marginBottom: 2 }}>
+      <FormControl fullWidth variant="outlined">
+        <InputLabel>Category</InputLabel>
+        <Select
+          multiple
+          value={category}
+          onChange={handleCategoryChange}
+          label="Category"
+          open={open}
+          onOpen={() => setOpen(true)}
+          onClose={() => setOpen(false)}
+          MenuProps={{
+            onClose: () => setOpen(false),
+          }}
+        >
+          <MenuItem value="">Select category</MenuItem>
+          <MenuItem value={1}>Politics</MenuItem>
+          <MenuItem value={2}>Business</MenuItem>
+          <MenuItem value={3}>Education</MenuItem>
+          <MenuItem value={4}>Farming</MenuItem>
+          <MenuItem value={5}>Health & lifestyle</MenuItem>
+          <MenuItem value={6}>Sports</MenuItem>
+          <MenuItem value={7}>State</MenuItem>
+          <MenuItem value={8}>National</MenuItem>
+          <MenuItem value={9}>International</MenuItem>
+          <MenuItem value={10}>Shree Jagannath</MenuItem>
+          {/* <MenuItem value="travel">Travel</MenuItem> */}
+          {/* Add more categories as needed */}
+        </Select>
+      </FormControl>
+    </FormGroup>
+    <FormGroup
+      sx={{
+        marginBottom: 2,
+        marginTop: 3,
+        justifyContent: "center",
+        alignItems: "start",
+      }}
+    >
+      {/* <FormLabel>Upload Thumbnail</FormLabel> */}
+      <div className="app">
+        <div className="parent">
+          <div className="file-upload">
+            <img
+              src={
+                "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.pngall.com%2Fwp-content%2Fuploads%2F2%2FUpload-PNG.png&f=1&nofb=1&ipt=b4498f166d3660329fc0c88795c0131e191452079391257b9a552558f27a91bc&ipo=images"
+              }
+              alt="upload"
+              className="img"
             />
-          </FormGroup>
-          <FormGroup sx={{ marginBottom: 2 }}>
-            <TextField
-              label="Content"
-              variant="outlined"
-              fullWidth
-              multiline
-              rows={13}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-            />
-          </FormGroup>
-          <FormGroup sx={{ marginBottom: 2 }}>
-            <FormControl fullWidth variant="outlined">
-              <InputLabel>Category</InputLabel>
-              <Select
-                multiple
-                value={category}
-                onChange={handleCategoryChange}
-                label="Category"
-                open={open}
-                onOpen={() => setOpen(true)}
-                onClose={() => setOpen(false)}
-                MenuProps={{
-                  onClose: () => setOpen(false),
-                }}
-              >
-                <MenuItem value="">Select category</MenuItem>
-                <MenuItem value={1}>Politics</MenuItem>
-                <MenuItem value={2}>Business</MenuItem>
-                <MenuItem value={3}>Education</MenuItem>
-                <MenuItem value={4}>Farming</MenuItem>
-                <MenuItem value={5}>Health & lifestyle</MenuItem>
-                <MenuItem value={6}>Sports</MenuItem>
-                <MenuItem value={7}>State</MenuItem>
-                <MenuItem value={8}>National</MenuItem>
-                <MenuItem value={9}>International</MenuItem>
-                <MenuItem value={10}>Shree Jagannath</MenuItem>
-                {/* <MenuItem value="travel">Travel</MenuItem> */}
-                {/* Add more categories as needed */}
-              </Select>
-            </FormControl>
-          </FormGroup>
-          <FormGroup
-            sx={{
-              marginBottom: 2,
-              marginTop: 3,
-              justifyContent: "center",
-              alignItems: "start",
-            }}
-          >
-            {/* <FormLabel>Upload Thumbnail</FormLabel> */}
-            <div className="app">
-              <div className="parent">
-                <div className="file-upload">
-                  <img
-                    src={
-                      "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.pngall.com%2Fwp-content%2Fuploads%2F2%2FUpload-PNG.png&f=1&nofb=1&ipt=b4498f166d3660329fc0c88795c0131e191452079391257b9a552558f27a91bc&ipo=images"
-                    }
-                    alt="upload"
-                    className="img"
-                  />
-                  <h3>Click box to upload</h3>
-                  <p>*max file size 10mb</p>
-                  <input type="file" onChange={(e) => handleImgSubmit(e)} />
-                </div>
-                {/* {
-                  !imgUrl ? <div style={{display:'flex', flex:1, justifyContent:'center', alignItems:'center'}}><p style={{fontSize:'20px', fontWeight:'bold', color:'gray'}}>Upload Image to Preview</p></div> :
-                   <div style={{display:'flex', flex:1, justifyContent:'center', alignItems:'center'}}><img src={imgUrl} alt="uploaded file" height={200} /></div>
-                } */}
-                <div style={{display:'flex', flexDirection:'row', flex:1, justifyContent:'space-around', alignItems:'center'}}>
-                  <div>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={["DateTimePicker"]}>
-                      <DateTimePicker
-                        label="Select time to publish"
-                        value={timer}
-                        onChange={(time) => {
-                          console.log(time);
-                          setTimer(time);
-                          setShowpickup(showpickup);
-                          // console.log(timer)
-                        }}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    // type="submit"
-                    sx={{
-                      marginBottom: 2,
-                      height: 30,
-                      marginTop: 3,
-                      width: "100%",
-                    }}
-                    disabled={!timer}
-                    onClick={schedulePost}
-                  >
-                    Schedule
-                  </Button>
-                  </div>
-                  <div>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    type="submit"
-                    sx={{ marginBottom: 2, height: 40, width: "100%" }}
-                    onClick={handleSubmit}
-                  >
-                    Publish Post
-                  </Button>
-                  </div>
-                 
-                
-                </div>
-              </div>
-              {!imgUrl && (
-                <div className="outerbar">
-                  <div
-                    className="innerbar"
-                    style={{
-                      width: `${progresspercent}%`,
-                      backgroundColor: "green",
-                      height: "2px",
-                      width:'100%'
-                    }}
-                  >
-                    {progresspercent <= 0 ? "" : `${progresspercent}%`}
-                  </div>
-                </div>
-              )}
-            </div>
-          </FormGroup>
-        </div>
-        <div className="buttons">
+            <h3>Click box to upload</h3>
+            <p>*max file size 10mb</p>
+            <input type="file" onChange={(e) => handleImgSubmit(e)} />
+          </div>
           <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-              overflow: "hidden",
-            }}
-          >
-            {/* <h2 style={{textAlign:'start'}}>Preview Post</h2> */}
-            <div style={{ width: "100%", textAlign: "start" }}>
-              <h3>{title ? title : ""}</h3>
-            </div>
-            {imgUrl ? (
-              <div
-                style={{
-                  display: "flex",
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  paddingTop: "10px",
-                }}
-              >
-                <img
-                  src={imgUrl}
-                  alt="uploaded file"
-                  height={300}
-                  width={520}
-                />
-              </div>
-            ) : (
-              ""
-            )}
+            // style={{
+            //   display: "flex",
+            //   flexDirection: "row",
+            //   flex: 1,
+            //   justifyContent: "space-around",
+            //   alignItems: "center",
 
-            <p
-              style={{
-                textAlign: "start",
-                backgroundColor: "white",
-                overflow: "hidden",
-                height: "40vh",
-                paddingTop: "10px",
-              }}
-            >
-              {contentWithBreaks ? contentWithBreaks : ""}
-            </p>
+            // }}
+            className="schedule_post"
+          >
+            <div>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={["DateTimePicker"]}>
+                  <DateTimePicker
+                    label="Select time to publish"
+                    value={timer}
+                    onChange={(time) => {
+                      console.log(time);
+                      setTimer(time);
+                      setShowpickup(showpickup);
+                      // console.log(timer)
+                    }}
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
+              <Button
+                variant="contained"
+                color="secondary"
+                // type="submit"
+                sx={{
+                  marginBottom: 2,
+                  height: 30,
+                  marginTop: 3,
+                  width: "100%",
+                }}
+                disabled={!timer}
+                onClick={schedulePost}
+              >
+                Schedule
+              </Button>
+            </div>
+            <div>
+              <Button
+                variant="contained"
+                color="success"
+                type="submit"
+                sx={{ marginBottom: 2, height: 40, width: "100%" }}
+                onClick={handleSubmit}
+              >
+                Publish Post
+              </Button>
+            </div>
           </div>
         </div>
+        {!imgUrl && (
+          <div className="outerbar">
+            <div
+              className="innerbar"
+              style={{
+                width: `${progresspercent}%`,
+                backgroundColor: "green",
+                height: "2px",
+                width: "100%",
+              }}
+            >
+              {progresspercent <= 0 ? "" : `${progresspercent}%`}
+            </div>
+          </div>
+        )}
       </div>
+    </FormGroup>
+  </div>
+        </div>
+
+        {/* Preview Section */}
+        <div className="preview" style={{ flex: '1', padding: '20px', boxSizing: 'border-box' }}>
+          <h3 style={{ textAlign: 'start' }}>{title ? title : ''}</h3>
+          {imgUrl && (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '10px' }}>
+              <img
+                src={imgUrl}
+                alt="uploaded file"
+                style={{ maxWidth: '100%', height: 'auto' }}
+              />
+            </div>
+          )}
+          <p style={{ textAlign: 'start', backgroundColor: 'white', overflow: 'hidden', paddingTop: '10px' }}>
+            {/* Content goes here */}
+            {contentWithBreaks ? contentWithBreaks : ""}
+          </p>
+        </div>
+      </div>
+    </div>
       <ToastContainer />
 
       {/* {imgUrl && <img src={imgUrl} alt="uploaded file" height={200} />} */}

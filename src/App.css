@@ -6,51 +6,43 @@
 
 .App {
   text-align: center;
+  
   padding-left: 5%;
   padding-right: 5%;
-  /* padding-top: 2%; */
-  
 }
-.heading{
+
+.heading {
   color: red;
   font-weight: bold;
   font-size: xx-large;
   padding-top: 1%;
-  padding-bottom: 1%
+  padding-bottom: 1%;
 }
+
 .form {
   display: flex;
-  flex-direction: row;
-  flex: 1;
-  justify-content: space-around;
-
+  flex-direction: column; /* Adjusted for responsiveness */
+  align-items: center; /* Adjusted for responsiveness */
 }
 
 .inputs {
-  /* flex: 1; */
-  justify-self: center;
-  align-self: center;
-  width: 50%;
-  /* background-color: rebeccapurple; */
+  width: 100%; /* Adjusted for responsiveness */
+  margin-bottom: 1rem; /* Added for spacing */
 }
 
 .buttons {
-  width: 30%;
-  /* background-color: greenyellow; */
+  width: 100%; /* Adjusted for responsiveness */
   display: flex;
-  justify-content: flex-start;
-  flex-direction: column;
-  margin-left: 10px;
+  justify-content: space-around; /* Adjusted for responsiveness */
+  margin-left: 0; /* Removed for responsiveness */
 }
 
 .app {
   width: 100%;
-  height: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  /* background: #e9f3fe; */
 }
 
 .parent {
@@ -61,13 +53,12 @@
   border-radius: 25px;
   box-shadow: 7px 20px 20px rgb(210, 227, 244);
   display: flex;
-  width: 100%;
-  background-color: white;
+  flex-direction: column; /* Adjusted for responsiveness */
+  align-items: center; /* Adjusted for responsiveness */
 }
 
 .file-upload {
   text-align: center;
-  /* border: 3px dashed rgb(210, 227, 244); */
   padding: 1.5rem;
   position: relative;
   cursor: pointer;
@@ -81,7 +72,7 @@
 .file-upload p {
   font-size: 0.87rem;
   margin-top: 10px;
-  color: rgb(232, 22, 22)
+  color: rgb(232, 22, 22);
 }
 
 .file-upload input {
@@ -96,3 +87,16 @@
   opacity: 0;
   cursor: pointer;
 }
+
+
+@media (min-width: 300px) and (max-width: 430px){
+  .form,
+  .preview {
+    flex: 1;
+    width: 100%;
+  }
+}
+
+
+
+
