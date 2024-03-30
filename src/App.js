@@ -27,6 +27,7 @@ function App() {
   const [imgUrl, setImgUrl] = useState(null);
   const [progresspercent, setProgresspercent] = useState(0);
   const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState('')
   const [content, setContent] = useState("");
   const [category, setCategory] = useState([]);
   const [author, setAuthor] = useState('The Quiver')
@@ -104,6 +105,13 @@ function App() {
     }
   };
 
+  const handleSlug = (event) => {
+    console.log(event)
+    // Replace spaces with '+' in the slug
+    const newSlug = event.target.value.replace(/\s+/g, '+');
+    setSlug(newSlug);
+  };
+
   const handleCategoryChange = (event) => {
     const { value: selectedCategories } = event.target;
     setCategory(selectedCategories);
@@ -174,6 +182,7 @@ function App() {
             imgUrl,
             youtubelink,
             author,
+            slug
           }
         );
 
@@ -185,6 +194,7 @@ function App() {
           setImgUrl(null);
           setYoutubelink("");
           setAuthor('')
+          setSlug('')
         } else {
           notify("Couldn't Publish..! Try Again");
         }
@@ -218,6 +228,7 @@ function App() {
               youtubelink,
               scheduleTime,
               author,
+              slug
             }
           )
           .then(async (response) => {
@@ -229,6 +240,7 @@ function App() {
             setProgresspercent(0);
             setYoutubelink("");
             setAuthor('')
+            setSlug('')
           });
       } else {
         notify("The image couldn't be posted !");
@@ -289,6 +301,15 @@ function App() {
                   fullWidth
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                />
+              </FormGroup>
+              <FormGroup sx={{ marginBottom: 2 }}>
+                <TextField
+                  label="Slug"
+                  variant="outlined"
+                  fullWidth
+                  value={slug}
+                  onChange={handleSlug}
                 />
               </FormGroup>
               <FormGroup sx={{ marginBottom: 2 }}>
