@@ -383,6 +383,7 @@ function App() {
                     <MenuItem value={'Biswa Ranjan Sahoo'}>Biswa Ranjan Sahoo</MenuItem>
                     <MenuItem value={'Jyotshna Kumari'}>Jyotshna Kumari</MenuItem>
                     <MenuItem value={'Pratap Kumar'}>Pratap Kumar</MenuItem>
+                    <MenuItem value={'Pratap Kumar'}>Ankita Lenka</MenuItem>
                     {/* <MenuItem value={5}>Health & lifestyle</MenuItem>
                     <MenuItem value={6}>Sports</MenuItem>
                     <MenuItem value={7}>State</MenuItem>
