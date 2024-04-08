@@ -30,7 +30,7 @@ function App() {
   const [slug, setSlug] = useState('')
   const [content, setContent] = useState("");
   const [category, setCategory] = useState([]);
-  const [author, setAuthor] = useState('The Quiver')
+  const [author, setAuthor] = useState('')
   const [youtubelink, setYoutubelink] = useState("");
   const [scheduledDateTime, setScheduledDateTime] = useState(null);
   const [timer, setTimer] = useState("");
