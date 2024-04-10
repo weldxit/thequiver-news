@@ -108,7 +108,7 @@ function App() {
   const handleSlug = (event) => {
     console.log(event)
     // Replace spaces with '+' in the slug
-    const newSlug = event.target.value.replace(/\s+/g, '+');
+    const newSlug = event.target.value.replace(/\s+/g, '-');
     setSlug(newSlug);
   };
 
