@@ -167,7 +167,7 @@ function App() {
     try {
       if (
         imgUrl !== null &&
-        category.length !== [] &&
+        category.length !== 0 &&
         title !== "" &&
         content !== ""
       ) {
