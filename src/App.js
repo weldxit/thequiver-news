@@ -171,6 +171,13 @@ function App() {
   
   
   const handleSubmit = async () => {
+    console.log( title,
+      content,
+      category,
+      imgUrl,
+      youtubelink,
+      author,
+      slug)
     try {
       if (
         imgUrl !== null &&
