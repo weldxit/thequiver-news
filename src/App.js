@@ -105,12 +105,12 @@ function App() {
     }
   };
 
-  const handleSlug = (event) => {
-    console.log(event)
-    // Replace spaces with '+' in the slug
-    const newSlug = event.target.value.replace(/\s+/g, '-');
-    setSlug(newSlug);
-  };
+  // const handleSlug = (event) => {
+  //   console.log(event)
+  //   // Replace spaces with '+' in the slug
+  //   const newSlug = event.target.value.replace(/\s+/g, '-');
+  //   setSlug(newSlug);
+  // };
 
   const handleCategoryChange = (event) => {
     const { value: selectedCategories } = event.target;
@@ -163,13 +163,21 @@ function App() {
       </React.Fragment>
     ));
   }
+  const handleSlug = (event) => {
+    // Replace spaces with '-' and convert to lowercase
+    const newSlug = event.target.value.replace(/\s+/g, '-').toLowerCase();
+    setSlug(newSlug);
+  };
+  
+  
   const handleSubmit = async () => {
     try {
       if (
         imgUrl !== null &&
         category.length !== 0 &&
         title !== "" &&
-        content !== ""
+        content !== "" &&
+        slug !== "" // Add a check to ensure slug is not empty
       ) {
         const date = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ssZ");
         const response = await axios.post(
@@ -185,7 +193,7 @@ function App() {
             slug
           }
         );
-
+  
         if (response.status === 200) {
           notify("Published Successfully");
           setTitle("");
@@ -193,8 +201,8 @@ function App() {
           setCategory([]);
           setImgUrl(null);
           setYoutubelink("");
-          setAuthor('')
-          setSlug('')
+          setAuthor('');
+          setSlug('');
         } else {
           notify("Couldn't Publish..! Try Again");
         }
@@ -207,6 +215,7 @@ function App() {
       notify("An error occurred. Please try again later.");
     }
   };
+  
 
   const schedulePost = async () => {
     try {
