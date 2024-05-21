@@ -188,7 +188,7 @@ function App() {
       ) {
         const date = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ssZ");
         const response = await axios.post(
-          "https://backend-thequiver.onrender.com/append_post",
+          "https://propickproperty.in/backend/append_post",
           {
             title,
             content,
@@ -234,7 +234,7 @@ function App() {
         notify("Scheduled on server...");
         await axios
           .post(
-            "https://backend-thequiver.onrender.com/schedule_post",
+            "https://propickproperty.in/backend/schedule_post",
             {
               title,
               content,
