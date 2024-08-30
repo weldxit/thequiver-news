@@ -1,8 +1,7 @@
 import "./App.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { storage } from "./firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-
 import Compressor from "compressorjs";
 import {
   TextField,
@@ -38,6 +37,10 @@ function App() {
   const [open, setOpen] = useState(false);
   const [openA, setOpenA] = useState(false);
 
+
+  // useEffect(() => {
+
+  // })
   // const [image, setImage] = useState(null);
 
   const handleImgSubmit = (e) => {
